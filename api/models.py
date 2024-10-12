@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
+from django.db.models import DateTimeField, ForeignKey, UniqueConstraint
 from django.db import models
 
 from api.validators import validate_show_time
@@ -84,3 +85,38 @@ class PlanetariumDome(models.Model):
 
     def get_seat_layout(self):
         return f"{self.rows} rows x {self.seats_in_row} seats per row"
+
+
+class Ticket(models.Model):
+    row = models.PositiveIntegerField()
+    seat = models.PositiveIntegerField()
+    show_session = models.ForeignKey(
+        'ShowSession', on_delete=models.CASCADE, related_name='tickets'
+    )
+    reservation = models.ForeignKey(
+        'Reservation', on_delete=models.CASCADE, related_name='tickets'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=('show_session', 'row', 'seat'), name='unique_ticket')
+        ]
+        ordering = ['-reservation__created_at']
+
+    def __str__(self):
+        reservation_user = self.reservation.user.username if self.reservation else 'not reserved'
+        return f"{self.show_session.astronomy_show.title}, row: {self.row}, seat: {self.seat}, reservation: {reservation_user}"
+
+    def clean(self):
+        num_seats = self.show_session.planetarium_dome.seats_in_row
+        num_rows = self.show_session.planetarium_dome.rows
+
+        if self.seat > num_seats or self.seat < 1:
+            raise ValidationError("Invalid seat")
+
+        if self.row > num_rows or self.row < 1:
+            raise ValidationError("Invalid row")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
