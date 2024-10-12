@@ -102,13 +102,23 @@ class Ticket(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=('show_session', 'row', 'seat'), name='unique_ticket')
+            models.UniqueConstraint(
+                fields=(
+                    'show_session', 'row', 'seat'
+                ), name='unique_ticket'
+            )
         ]
         ordering = ['-reservation__created_at']
 
     def __str__(self):
-        reservation_user = self.reservation.user.username if self.reservation else 'not reserved'
-        return f"{self.show_session.astronomy_show.title}, row: {self.row}, seat: {self.seat}, reservation: {reservation_user}"
+        reservation_user = self.reservation.user.username \
+            if self.reservation \
+            else 'not reserved'
+        return (
+            f"{self.show_session.astronomy_show.title}, "
+            f"row: {self.row}, seat: {self.seat}, "
+            f"reservation: {reservation_user}"
+        )
 
     def clean(self):
         num_seats = self.show_session.planetarium_dome.seats_in_row
@@ -126,11 +136,18 @@ class Ticket(models.Model):
 
 
 class Reservation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations')
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='reservations'
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['-created_at']
 
     def __str__(self):
-        return f"Reservation by {self.user.username} on {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+        return (
+            f"Reservation by {self.user.username} on "
+            f"{self.created_at.strftime('%Y-%m-%d %H:%M')}"
+        )
