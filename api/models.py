@@ -1,9 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-from django.db.models import DateTimeField, ForeignKey, UniqueConstraint
 from django.db import models
 
 from api.validators import validate_show_time
+
+
+User = get_user_model()
+
 
 class ShowTheme(models.Model):
     name = models.CharField(max_length=100)
@@ -120,3 +123,14 @@ class Ticket(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
         super().save(*args, **kwargs)
+
+
+class Reservation(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reservations')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Reservation by {self.user.username} on {self.created_at.strftime('%Y-%m-%d %H:%M')}"
