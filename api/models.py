@@ -15,6 +15,18 @@ class ShowTheme(models.Model):
         return self.name
 
 
+class AstronomyShow(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    theme = models.ManyToManyField(ShowTheme, related_name="astronomy_shows", )
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+
 class ShowSession(models.Model):
     astronomy_show = models.ForeignKey(
         "AstronomyShow", on_delete=models.CASCADE, related_name="show_sessions"
@@ -59,7 +71,7 @@ class ShowSession(models.Model):
 
 
 class PlanetariumDome(models.Model):
-    name = models.CharField(max_length=100, unique=True)git statsu
+    name = models.CharField(max_length=100, unique=True)
     rows = models.PositiveIntegerField()
     seats_in_row = models.PositiveIntegerField()
 
