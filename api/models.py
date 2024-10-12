@@ -56,3 +56,19 @@ class ShowSession(models.Model):
     @property
     def show_time_formatted(self):
         return self.show_time.strftime("%Y-%m-%d %H:%M")
+
+
+class PlanetariumDome(models.Model):
+    name = models.CharField(max_length=100, unique=True)git statsu
+    rows = models.PositiveIntegerField()
+    seats_in_row = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def capacity(self):
+        return self.rows * self.seats_in_row
+
+    def get_seat_layout(self):
+        return f"{self.rows} rows x {self.seats_in_row} seats per row"
