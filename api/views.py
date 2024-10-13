@@ -137,3 +137,17 @@ class TicketViewSet(viewsets.ModelViewSet):
             return TicketRetrieveSerializer
         return self.serializer_class
 
+
+class ReservationViewSet(viewsets.ModelViewSet):
+    queryset = Reservation.objects.all()
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = self.queryset.select_related("user")
+        if user.is_staff:
+            return queryset.order_by("-user")
+        return queryset.filter(user=user)
+
+    def get_serializer_class(self):
+        return ReservationCreateSerializer if self.action == "create" else ReservationSerializer
+
