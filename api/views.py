@@ -115,3 +115,25 @@ class PlanetariumDomeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(seats_in_row__range=(min_seats, max_seats))
 
         return queryset
+
+
+class TicketViewSet(viewsets.ModelViewSet):
+    queryset = Ticket.objects.select_related("show_session", "reservation")
+
+    def get_queryset(self):
+        title = self.request.query_params.get("title")
+        if title:
+            return self.queryset.filter(show_session__astronomy_show__title=title)
+        return self.queryset
+
+    @method_decorator(cache_page(60 * 60 * 2))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return TicketListSerializer
+        elif self.action == "retrieve":
+            return TicketRetrieveSerializer
+        return self.serializer_class
+
