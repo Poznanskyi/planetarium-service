@@ -22,3 +22,25 @@ from api.validators import validate_show_time
 class ShowThemeViewSet(viewsets.ModelViewSet):
     queryset = ShowTheme.objects.all()
     serializer_class = ShowThemeSerializer
+
+
+class AstronomyShowViewSet(viewsets.ModelViewSet):
+    queryset = AstronomyShow.objects.prefetch_related("show_theme")
+    serializer_class = AstronomyShowSerializer
+
+    def get_queryset(self):
+        queryset = self.queryset
+        show_theme = self.request.query_params.get("show_theme")
+        title = self.request.query_params.get("title")
+
+        if show_theme:
+            queryset = queryset.filter(show_theme__name=show_theme)
+        if title:
+            queryset = queryset.filter(title=title)
+
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action in ["list", "retrieve"]:
+            return AstronomyShowListSerializer
+        return self.serializer_class
