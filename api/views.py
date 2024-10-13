@@ -44,3 +44,51 @@ class AstronomyShowViewSet(viewsets.ModelViewSet):
         if self.action in ["list", "retrieve"]:
             return AstronomyShowListSerializer
         return self.serializer_class
+
+
+class ShowSessionViewSet(viewsets.ModelViewSet):
+    queryset = ShowSession.objects.select_related("astronomy_show", "planetarium_dome")
+
+    def get_queryset(self):
+        queryset = self.queryset
+        filters = {
+            "astronomy_show__title": self.request.query_params.get("astronomy_show"),
+            "planetarium_dome__name": self.request.query_params.get("planetarium_dome"),
+            "show_time__year": self.request.query_params.get("show_time_year"),
+            "show_time__month": self.request.query_params.get("show_time_month"),
+            "show_time__day": self.request.query_params.get("show_time_day"),
+            "show_time__hour": self.request.query_params.get("show_time_hour"),
+        }
+        queryset = queryset.filter(**{k: v for k, v in filters.items() if v})
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ShowSessionListSerializer
+        elif self.action == "retrieve":
+            return ShowSessionRetrieveSerializer
+        return self.serializer_class
+
+
+class ShowSessionViewSet(viewsets.ModelViewSet):
+    queryset = ShowSession.objects.select_related("astronomy_show", "planetarium_dome")
+
+    def get_queryset(self):
+        queryset = self.queryset
+        filters = {
+            "astronomy_show__title": self.request.query_params.get("astronomy_show"),
+            "planetarium_dome__name": self.request.query_params.get("planetarium_dome"),
+            "show_time__year": self.request.query_params.get("show_time_year"),
+            "show_time__month": self.request.query_params.get("show_time_month"),
+            "show_time__day": self.request.query_params.get("show_time_day"),
+            "show_time__hour": self.request.query_params.get("show_time_hour"),
+        }
+        queryset = queryset.filter(**{k: v for k, v in filters.items() if v})
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return ShowSessionListSerializer
+        elif self.action == "retrieve":
+            return ShowSessionRetrieveSerializer
+        return self.serializer_class
