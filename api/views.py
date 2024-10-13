@@ -92,3 +92,26 @@ class ShowSessionViewSet(viewsets.ModelViewSet):
         elif self.action == "retrieve":
             return ShowSessionRetrieveSerializer
         return self.serializer_class
+
+
+class PlanetariumDomeViewSet(viewsets.ModelViewSet):
+    queryset = PlanetariumDome.objects.all()
+
+    def get_queryset(self):
+        queryset = self.queryset
+        filters = {
+            "name": self.request.query_params.get("name"),
+            "rows": self.request.query_params.get("rows"),
+            "seats_in_row": self.request.query_params.get("seats_in_row"),
+        }
+        queryset = queryset.filter(**{k: v for k, v in filters.items() if v})
+
+        if rows_range := self.request.query_params.get("rows_range"):
+            min_seats, max_seats = map(int, rows_range.split("-"))
+            queryset = queryset.filter(rows__range=(min_seats, max_seats))
+
+        if seats_range := self.request.query_params.get("seats_range"):
+            min_seats, max_seats = map(int, seats_range.split("-"))
+            queryset = queryset.filter(seats_in_row__range=(min_seats, max_seats))
+
+        return queryset
