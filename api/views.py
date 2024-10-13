@@ -151,3 +151,37 @@ class ReservationViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         return ReservationCreateSerializer if self.action == "create" else ReservationSerializer
 
+
+class ShowSessionUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        csv_file = request.FILES.get("file")
+        if not csv_file or not csv_file.name.endswith(".csv"):
+            return Response({"error": "Invalid file"}, status=status.HTTP_400_BAD_REQUEST)
+
+        decoded_file = csv_file.read().decode("utf-8").splitlines()
+        reader = csv.DictReader(decoded_file)
+
+        sessions_created, errors = [], []
+
+        for row in reader:
+            serializer = ShowSessionSerializer(data=row)
+            if serializer.is_valid():
+                show_time_str = row.get("show_time")
+                try:
+                    show_time = datetime.strptime(show_time_str, "%Y-%m-%d %H:%M:%S")
+                    validate_show_time(show_time, serializer.validated_data["astronomy_show"],
+                                       serializer.validated_data["planetarium_dome"],
+                                       ShowSession.objects.all())
+                    sessions_created.append(serializer.save())
+                except (ValueError, ValidationError) as e:
+                    errors.append(str(e))
+            else:
+                errors.append(serializer.errors)
+
+        if errors:
+            return Response({"errors": errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"created_sessions": ShowSessionSerializer(sessions_created, many=True).data},
+                        status=status.HTTP_201_CREATED)
