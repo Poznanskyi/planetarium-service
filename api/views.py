@@ -10,14 +10,14 @@ from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from api.models import ShowTheme, AstronomyShow, ShowSession, PlanetariumDome, Ticket, Reservation
-from api.serializers.planetarium_serializers import (
+from api.models import ShowTheme, AstronomyShow, ShowSession, PlanetariumDome, Ticket, Reservation, User
+from api.validators import validate_show_time
+from serializers import (
     ShowThemeSerializer, AstronomyShowSerializer, ShowSessionSerializer,
     ShowSessionListSerializer, ShowSessionRetrieveSerializer,
     PlanetariumDomeSerializer, TicketSerializer, TicketListSerializer,
-    ReservationSerializer, ReservationCreateSerializer, TicketRetrieveSerializer
+    ReservationSerializer, ReservationCreateSerializer, TicketRetrieveSerializer, AstronomyShowListSerializer
 )
-from api.validators import validate_show_time
 
 class ShowThemeViewSet(viewsets.ModelViewSet):
     queryset = ShowTheme.objects.all()
