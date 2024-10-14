@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import routers
 
-from api.views.planetarium_views import (
+from views import (
     ShowThemeViewSet,
     AstronomyShowViewSet,
     ShowSessionViewSet,
