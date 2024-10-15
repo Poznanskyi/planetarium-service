@@ -13,6 +13,8 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -97,14 +99,7 @@ WSGI_APPLICATION = 'planetarium_service.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
-        "HOST": os.environ["POSTGRES_HOST"],
-        "PORT": os.environ["POSTGRES_PORT"],
-    }
+    'default': dj_database_url.config(default='postgresql://neondb_owner:eZ57ndFbxuJt@ep-proud-darkness-a2lrtc0k.eu-central-1.aws.neon.tech/neondb?sslmode=require')
 }
 
 
@@ -177,10 +172,10 @@ INTERNAL_IPS = [
 
 SPECTACULAR_SETTING = {
     "Title": "Planetarium API",
-    "Description": "Service for planetarium, including whole required staff",
+    "Description": "Service for planetarium",
     "Version": "1.0.0",
-    "Author": "Boyok",
-    "Email": "andreboiko1@gmail.com",
+    "Author": "Poznanskyi",
+    "Email": "poznanskyi.d@gmail.com",
     "SERVICE_INCLUDE_SCHEMA": False,
     "SWAGGER_UI_SETTINGS": {
         "deepLinking": True,
