@@ -1,5 +1,5 @@
 FROM python:3.12-alpine
-LABEL maintainer="andreboiko1@gmail.com"
+LABEL maintainer="poznanskyi.d@gmail.com"
 
 ENV PYTHONUNBUFFERED 1
 
