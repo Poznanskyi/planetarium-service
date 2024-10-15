@@ -20,7 +20,7 @@ from api.models import (
     User,
 )
 from api.validators import validate_show_time
-from serializers import (
+from api.serializers import (
     ShowThemeSerializer,
     AstronomyShowSerializer,
     ShowSessionSerializer,
