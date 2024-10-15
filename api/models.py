@@ -13,7 +13,7 @@ class ShowTheme(models.Model):
     description = models.TextField()
 
     class Meta:
-        ordering = ['name']
+        ordering = ["name"]
 
     def __str__(self):
         return self.name
@@ -22,10 +22,13 @@ class ShowTheme(models.Model):
 class AstronomyShow(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    theme = models.ManyToManyField(ShowTheme, related_name="astronomy_shows", )
+    theme = models.ManyToManyField(
+        ShowTheme,
+        related_name="astronomy_shows",
+    )
 
     class Meta:
-        ordering = ['title']
+        ordering = ["title"]
 
     def __str__(self):
         return self.title
@@ -44,7 +47,7 @@ class ShowSession(models.Model):
     show_time = models.DateTimeField()
 
     class Meta:
-        ordering = ('-show_time',)
+        ordering = ("-show_time",)
 
     def __str__(self):
         return f"{self.astronomy_show.title} at {self.show_time}"
@@ -94,26 +97,24 @@ class Ticket(models.Model):
     row = models.PositiveIntegerField()
     seat = models.PositiveIntegerField()
     show_session = models.ForeignKey(
-        'ShowSession', on_delete=models.CASCADE, related_name='tickets'
+        "ShowSession", on_delete=models.CASCADE, related_name="tickets"
     )
     reservation = models.ForeignKey(
-        'Reservation', on_delete=models.CASCADE, related_name='tickets'
+        "Reservation", on_delete=models.CASCADE, related_name="tickets"
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=(
-                    'show_session', 'row', 'seat'
-                ), name='unique_ticket'
+                fields=("show_session", "row", "seat"), name="unique_ticket"
             )
         ]
-        ordering = ['-reservation__created_at']
+        ordering = ["-reservation__created_at"]
 
     def __str__(self):
-        reservation_user = self.reservation.user.username \
-            if self.reservation \
-            else 'not reserved'
+        reservation_user = (
+            self.reservation.user.username if self.reservation else "not reserved"
+        )
         return (
             f"{self.show_session.astronomy_show.title}, "
             f"row: {self.row}, seat: {self.seat}, "
@@ -137,14 +138,12 @@ class Ticket(models.Model):
 
 class Reservation(models.Model):
     user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='reservations'
+        User, on_delete=models.CASCADE, related_name="reservations"
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def __str__(self):
         return (
